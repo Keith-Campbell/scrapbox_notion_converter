@@ -1,20 +1,45 @@
 import json
 import os
+import re
 
-filepath = "atshhandelssohn-54351265.json"
+filepath = "data.json"
 fopen = open(filepath, "r")
 json_dict = json.load(fopen)
 
 os.makedirs("./generated", exist_ok=True)
 
 def convert(string):
-        string = string.replace("[** ", "### ").replace("]", "") # h3
-        string = string.replace("[*** ", "## ").replace("]", "") # h2
-        string = string.replace("[**** ", "# ").replace("]", "") # h1
-        string = string.replace("[* ", "**").replace("]", "**") # bold
-        string = string.replace("[/ ", "*").replace("]", "*") # italic
-        string = string.replace("[_ ", "<u>").replace("]", "</u>") # bold
-        string = string.replace("[$ ", "$").replace("]", "$") # math
+    pattern = r"\[(.*?)\]"
+    while True:
+        match = re.search(pattern, string)
+        if match:
+            res_str = match.group().replace("[", "")
+            if res_str.startswith("* "): # bold
+                res_str = res_str.replace("* ", "**")
+                res_str = res_str.replace("]", "**")
+            if res_str.startswith("_ "): # underline
+                res_str = res_str.replace("_ ", "<u>")
+                res_str = res_str.replace("]", "</u>")
+            if res_str.startswith("** "): # h3
+                res_str = res_str.replace("** ", "### ")
+                res_str = res_str.replace("]", "")
+            if res_str.startswith("*** "): # h2
+                res_str = res_str.replace("*** ", "## ")
+                res_str = res_str.replace("]", "")
+            if res_str.startswith("**** "): # h1
+                res_str = res_str.replace("**** ", "# ")
+                res_str = res_str.replace("]", "")
+            if res_str.startswith("/ "): # italic
+                res_str = res_str.replace("/ ", "*")
+                res_str = res_str.replace("]", "*")
+            if res_str.startswith("$ "): # math
+                res_str = res_str.replace("$ ", "$")
+                res_str = res_str.replace("]", "$")
+            string = string.replace(match.group(), res_str)
+            print(string)
+            input()
+        else:
+            break
         return string
 
 for entry in range(len(json_dict["pages"])):
