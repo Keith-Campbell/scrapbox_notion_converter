@@ -2,8 +2,9 @@ import json
 import os
 import re
 
-filepath = "data_paper.json"
-genpath = "./generated/paper_survey/"
+prefix = "research_note" # prefix of json file
+filepath = prefix + ".json" # path to the json file
+genpath = "./generated/" + prefix + "/" # path to the generated files
 fopen = open(filepath, "r")
 json_dict = json.load(fopen)
 
