@@ -3,20 +3,29 @@ import os
 import re
 
 filepath = "data_paper.json"
-genpath = "./generated/paper_survey"
+genpath = "./generated/paper_survey/"
 fopen = open(filepath, "r")
 json_dict = json.load(fopen)
 
-def pick_parentheses(line):
+def outer_parent(string):
+    string = string.replace("[$ ", "$")
     paren_count = 0
-    for char in line:
+    char_count = 0
+    for char in string:
+        print(char + ", str: " + string)
         if char == "[":
             paren_count += 1
         elif char == "]":
-            paren_count -= 1
-        if paren_count == 1:
-            line[]
-    return 
+            print("paren_count: " + str(paren_count))
+            if paren_count != 0:
+                paren_count -= 1
+            elif paren_count == 0:
+                string = string[:char_count] + "$" + string[char_count+1:]
+                break
+            else:
+                raise ValueError("Unmatched parenthesis")
+        char_count += 1
+    return string
 
 def convert(string):
     pattern = r"\[(.*?)\]"
@@ -44,24 +53,16 @@ def convert(string):
                 res_str = res_str.replace("[/ ", "*")
                 res_str = res_str.replace("]", "*")
             elif res_str.startswith("[$ "): # math
-                line
-                res_str = res_str.replace("[$ ", "$")
-                blacket_count = res_str.count("[") # 数式中の中括弧の数
-                if blacket_count == 0:
-                    res_str = res_str.replace("]", "$")
-                    break
-                else:
-                    mathflag = True
-            elif mathflag:
-                
-                mathflag = False
-                res_str = res_str.replace("]", "$")
+                _string = outer_parent(string)
+                #res_str = re.search(r"\$(.*?)\$", _string).group()
+                return string.replace(string, _string)
             elif res_str.startswith("[http"): # url
                 url = res_str.strip("[").strip("]")
                 res_str = "[" + url + "]" + "(" + url + ")"
                 break
-            else: # throw error
-                return ValueError("Unrecognized format")
+            else:
+                res_str = res_str.replace("[", "")
+                res_str = res_str.replace("]", "")
             string = string.replace(match.group(), res_str)
         else:
             break
